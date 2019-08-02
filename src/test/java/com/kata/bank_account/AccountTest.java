@@ -5,9 +5,11 @@ import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDateTime;
 
+import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 
+import org.javamoney.moneta.Money;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +25,8 @@ import com.kata.bank_account.services.AccountService;
 @ContextConfiguration(locations = { "/spring-config.xml" })
 public class AccountTest {
 	
+	private static final CurrencyUnit EURO = Monetary.getCurrency("EUR");
+	
 	@Autowired
 	private AccountService accountService;
 	
@@ -31,14 +35,14 @@ public class AccountTest {
 
 	@Before()
 	public void setup() {
-		MonetaryAmount initialAmount = Monetary.getDefaultAmountFactory().setNumber(2.50).setCurrency("EUR").create();
+		MonetaryAmount initialAmount = Money.of(2.50, EURO);
 		account = new Account(LocalDateTime.now(), initialAmount);
 		customer = new Customer("Fahmi BEN SALAH", account);
 	}
 
 	@Test
 	public void testDepositMoney() {
-		MonetaryAmount amountDeposited = Monetary.getDefaultAmountFactory().setNumber(1.275).setCurrency("EUR").create();
+		MonetaryAmount amountDeposited = Money.of(1.275, EURO);
 		accountService.depositMoney(customer, amountDeposited, LocalDateTime.now());
 		assertThat(customer.getAccount().getAmount().getNumber().doubleValue(), is(3.775));
 	}
