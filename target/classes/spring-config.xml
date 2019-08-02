@@ -9,4 +9,5 @@
  
  	<bean id="accountService" class="com.kata.bank_account.services.AccountService"></bean>
 	<bean id="transactionService" class="com.kata.bank_account.services.TransactionService"></bean>
+	<bean id="consolePrinter" class="com.kata.bank_account.models.ConsolePrinter"></bean>
 </beans>
