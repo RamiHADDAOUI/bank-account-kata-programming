@@ -4,10 +4,12 @@ import java.time.LocalDateTime;
 
 import javax.money.MonetaryAmount;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kata.bank_account.models.Customer;
 import com.kata.bank_account.models.Transaction;
+import com.kata.bank_account.utils.Printer;
 
 /**
  * @author fahmi
@@ -15,6 +17,9 @@ import com.kata.bank_account.models.Transaction;
  */
 @Service
 public class TransactionService {
+	
+	@Autowired
+	Printer printer;
 
 	public TransactionService() {
 
@@ -24,14 +29,14 @@ public class TransactionService {
 		MonetaryAmount currentAmount = customer.getAccount().getAmount();
 		MonetaryAmount newAmount = currentAmount;
 		if (amount.isNegative()) {
-			System.err.print("Impossible Transaction : Negative Amount");
+			printer.printError("Impossible Transaction : Negative Amount");
 			return;
 		}
 		if ("Deposit".equals(operation))
 			newAmount = currentAmount.add(amount);
 		else if ("Withdrawl".equals(operation)) {
 			if (amount.isGreaterThan(currentAmount)) {
-				System.err.print("Impossible Transaction : Not Enough Money");
+				printer.printError("Impossible Transaction : Not Enough Money");
 				return;
 			}
 			newAmount = currentAmount.subtract(amount);

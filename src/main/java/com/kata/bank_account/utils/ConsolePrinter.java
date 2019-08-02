@@ -13,12 +13,12 @@ public class ConsolePrinter implements Printer {
 
 	public void print(String textToPrint) {
 		PrintStream printer = System.out;
-		printer.println(textToPrint);
+		printer.print(textToPrint);
 	}
 
 	public void printError(String textToPrint) {
 		PrintStream printer = System.err;
-		printer.println(textToPrint);
+		printer.print(textToPrint);
 	}
 
 	public void printf(String format, Object ...args) {
