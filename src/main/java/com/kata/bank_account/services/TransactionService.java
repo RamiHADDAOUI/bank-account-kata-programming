@@ -23,9 +23,17 @@ public class TransactionService {
 	public void registerTransaction(Customer customer, MonetaryAmount amount, LocalDateTime date, String operation) {
 		MonetaryAmount currentAmount = customer.getAccount().getAmount();
 		MonetaryAmount newAmount = currentAmount;
+		if (amount.isNegative()) {
+			System.err.print("Impossible Transaction : Negative Amount");
+			return;
+		}
 		if ("Deposit".equals(operation))
 			newAmount = currentAmount.add(amount);
 		else if ("Withdrawl".equals(operation)) {
+			if (amount.isGreaterThan(currentAmount)) {
+				System.err.print("Impossible Transaction : Not Enough Money");
+				return;
+			}
 			newAmount = currentAmount.subtract(amount);
 		}
 		Transaction transaction = new Transaction(amount, newAmount, date, operation);
