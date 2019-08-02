@@ -11,7 +11,9 @@ import javax.money.MonetaryAmount;
 
 import org.javamoney.moneta.Money;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.SystemErrRule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,6 +28,9 @@ import com.kata.bank_account.services.AccountService;
 public class AccountTest {
 	
 	private static final CurrencyUnit EURO = Monetary.getCurrency("EUR");
+	
+	@Rule
+    public final SystemErrRule systemErrRule = new SystemErrRule().enableLog();
 	
 	@Autowired
 	private AccountService accountService;
@@ -48,9 +53,39 @@ public class AccountTest {
 	}
 	
 	@Test
+	public void testDepositMoneyWithNegativeAmount() {
+		MonetaryAmount amountDeposited = Money.of(-1.275, EURO);
+		int numberOfTransactionsBeforeDeposit = customer.getTransactions().size();
+		accountService.depositMoney(customer, amountDeposited, LocalDateTime.now());
+		int numberOfTransactionsAfterDeposit = customer.getTransactions().size();
+		assertThat(numberOfTransactionsBeforeDeposit, is(numberOfTransactionsAfterDeposit));
+		assertThat(systemErrRule.getLog(), is("Impossible Transaction : Negative Amount"));
+	}
+	
+	@Test
 	public void testRetrieveMoney() {
 		MonetaryAmount amountDeposited = Money.of(1.275, EURO);
 		accountService.retrieveMoney(customer, amountDeposited, LocalDateTime.now());
 		assertThat(customer.getAccount().getAmount().getNumber().doubleValue(), is(1.225));
+	}
+	
+	@Test
+	public void testRetrieveMoneyWithNegativeAmount() {
+		MonetaryAmount amountDeposited = Money.of(-1.275, EURO);
+		int numberOfTransactionsBeforeRetrieve = customer.getTransactions().size();
+		accountService.retrieveMoney(customer, amountDeposited, LocalDateTime.now());
+		int numberOfTransactionsAfterRetrieve = customer.getTransactions().size();
+		assertThat(numberOfTransactionsBeforeRetrieve, is(numberOfTransactionsAfterRetrieve));
+		assertThat(systemErrRule.getLog(), is("Impossible Transaction : Negative Amount"));
+	}
+	
+	@Test
+	public void testRetrieveMoneyWithValueGreaterThanAmount() {
+		MonetaryAmount amountDeposited = Money.of(5.50, EURO);
+		int numberOfTransactionsBeforeRetrieve = customer.getTransactions().size();
+		accountService.retrieveMoney(customer, amountDeposited, LocalDateTime.now());
+		int numberOfTransactionsAfterRetrieve = customer.getTransactions().size();
+		assertThat(numberOfTransactionsBeforeRetrieve, is(numberOfTransactionsAfterRetrieve));
+		assertThat(systemErrRule.getLog(), is("Impossible Transaction : Not Enough Money"));
 	}
 }
