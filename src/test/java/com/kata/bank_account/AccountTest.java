@@ -47,4 +47,10 @@ public class AccountTest {
 		assertThat(customer.getAccount().getAmount().getNumber().doubleValue(), is(3.775));
 	}
 	
+	@Test
+	public void testRetrieveMoney() {
+		MonetaryAmount amountDeposited = Money.of(1.275, EURO);
+		accountService.retrieveMoney(customer, amountDeposited, LocalDateTime.now());
+		assertThat(customer.getAccount().getAmount().getNumber().doubleValue(), is(1.225));
+	}
 }

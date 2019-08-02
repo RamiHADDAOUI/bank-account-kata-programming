@@ -24,7 +24,11 @@ public class AccountService {
 	}
 	
 	public void depositMoney(Customer customer, MonetaryAmount value, LocalDateTime date) {
-		transactionService.registerTransaction(customer, value, date);
+		transactionService.registerTransaction(customer, value, date, "Deposit");
+	}
+	
+	public void retrieveMoney(Customer customer, MonetaryAmount value, LocalDateTime date) {
+		transactionService.registerTransaction(customer, value, date, "Withdrawl");
 	}
 	
 }

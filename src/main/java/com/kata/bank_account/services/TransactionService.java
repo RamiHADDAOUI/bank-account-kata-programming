@@ -20,9 +20,15 @@ public class TransactionService {
 
 	}
 
-	public void registerTransaction(Customer customer, MonetaryAmount amount, LocalDateTime date) {
-		MonetaryAmount newAmount = amount.add(customer.getAccount().getAmount());
-		Transaction transaction = new Transaction(amount, newAmount, date, "Deposit");
+	public void registerTransaction(Customer customer, MonetaryAmount amount, LocalDateTime date, String operation) {
+		MonetaryAmount currentAmount = customer.getAccount().getAmount();
+		MonetaryAmount newAmount = currentAmount;
+		if ("Deposit".equals(operation))
+			newAmount = currentAmount.add(amount);
+		else if ("Withdrawl".equals(operation)) {
+			newAmount = currentAmount.subtract(amount);
+		}
+		Transaction transaction = new Transaction(amount, newAmount, date, operation);
 		customer.getAccount().setAmount(newAmount);
 		customer.getTransactions().add(transaction);
 	}
